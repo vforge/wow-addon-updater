@@ -36,10 +36,10 @@ def squish_tocs(tocs):
     addons = []
     for toc in tocs:
     name = find_addon_name(toc)
-        if name not in addons:
-            version = find_addon_version(toc)
-            print("Found %s (version: %s)" % (name, version))
-            addons.append(name)
+    if name not in addons:
+        version = find_addon_version(toc)
+        print("Found %s (version: %s)" % (name, version))
+        addons.append(name)
     return addons
 	
 
