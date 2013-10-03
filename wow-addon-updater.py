@@ -73,6 +73,6 @@ print("WoW Addon Updater")
 print("-----------------")
 
 # find tocs
-addon_tocs = scan_directory_for_toc('SampleAddOns')
+addon_tocs = scan_directory_for_toc('AddOns')
 addons = squish_tocs(addon_tocs)
 
