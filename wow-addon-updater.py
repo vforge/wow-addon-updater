@@ -16,3 +16,4 @@ print("SCANNING: %s" % directory)
 print("-----------------")
 for addon in WowAddonScanner.scan(directory):
     addon.print()
+    print("-----------------")
