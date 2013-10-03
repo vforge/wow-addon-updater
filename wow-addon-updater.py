@@ -7,40 +7,40 @@ import re
 
 # defs
 def scan_directory_for_toc(dir):
-	tocs = glob.glob(dir + '/*/*.toc')
-	print("Found %d directories" % len(tocs))
-	return tocs
+    tocs = glob.glob(dir + '/*/*.toc')
+    print("Found %d directories" % len(tocs))
+    return tocs
 	
 def run_regex_and_return_string(pattern, binary_data):
-	regex = re.compile(pattern, re.I)
-	match = regex.search(binary_data)
-	if (match):
-		return str(match.group(1), encoding='UTF-8').strip()
-	else:
-		return 0
+    regex = re.compile(pattern, re.I)
+    match = regex.search(binary_data)
+    if (match):
+        return str(match.group(1), encoding='UTF-8').strip()
+    else:
+        return 0
 	
 def find_in_toc(string, toc_file):
-	toc_data = open(toc_file, 'rb').read()
-	return run_regex_and_return_string(bytes(string + ": (.*)\n", 'utf-8'), toc_data)
+    toc_data = open(toc_file, 'rb').read()
+    return run_regex_and_return_string(bytes(string + ": (.*)\n", 'utf-8'), toc_data)
 	
 
 # find addon name from toc
 def find_addon_name(toc_file):
-	return find_in_toc("X-Curse-Project-Name", toc_file) or find_in_toc("Title", toc_file)
+    return find_in_toc("X-Curse-Project-Name", toc_file) or find_in_toc("Title", toc_file)
 
 def find_addon_version(toc_file):
-	return find_in_toc("X-Curse-Packaged-Version", toc_file) or find_in_toc("Version", toc_file)
+    return find_in_toc("X-Curse-Packaged-Version", toc_file) or find_in_toc("Version", toc_file)
 	
 # get addons list instead of tocs
 def squish_tocs(tocs):
-	addons = []
-	for toc in tocs:
-		name = find_addon_name(toc)
-		if (name not in addons):
-			version = find_addon_version(toc)
-			print("Found %s (version: %s)" % (name, version))
-			addons.append(name)
-	return addons
+    addons = []
+    for toc in tocs:
+    name = find_addon_name(toc)
+        if name not in addons:
+            version = find_addon_version(toc)
+            print("Found %s (version: %s)" % (name, version))
+            addons.append(name)
+    return addons
 	
 
 # functions
