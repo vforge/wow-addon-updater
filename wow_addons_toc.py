@@ -1,5 +1,6 @@
 import re
 import glob
+from progressBar import progressBar
 
 def scan(dir):
     tocs = glob.glob(dir + '/*/*.toc')
