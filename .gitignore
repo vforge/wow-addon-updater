@@ -1,6 +1,9 @@
 # idea
 .idea/*
 
+# addons
+AddOns/*
+
 *.py[cod]
 
 # C extensions
