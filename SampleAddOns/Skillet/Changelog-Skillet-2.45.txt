@@ -1,0 +1,53 @@
+------------------------------------------------------------------------
+r322 | yossa | 2013-09-18 16:13:58 +0000 (Wed, 18 Sep 2013) | 1 line
+Changed paths:
+   A /tags/2.45 (from /trunk:321)
+
+Tagging as 2.45
+------------------------------------------------------------------------
+r321 | hotzed | 2013-09-17 07:51:11 +0000 (Tue, 17 Sep 2013) | 2 lines
+Changed paths:
+   M /trunk
+   M /trunk/Skillet.lua
+   M /trunk/SkilletData.lua
+
+Skillet:
+- fix error with non linkable profs
+------------------------------------------------------------------------
+r319 | hotzed | 2013-09-15 00:23:26 +0000 (Sun, 15 Sep 2013) | 4 lines
+Changed paths:
+   M /trunk/Inventory.lua
+   M /trunk/Skillet.lua
+   M /trunk/SkilletData.lua
+   M /trunk/TradeskillInfo.lua
+   M /trunk/UI/MainFrame.lua
+   D /trunk/trunk
+
+Skillet:
+- disable all data links (for patch 5.4 issue)
+- disable link for another char
+- change GetSkillRanks function
+------------------------------------------------------------------------
+r318 | hotzed | 2013-09-12 13:11:32 +0000 (Thu, 12 Sep 2013) | 1 line
+Changed paths:
+   M /trunk/Skillet.toc
+
+patch 5.4
+------------------------------------------------------------------------
+r317 | hotzed | 2013-09-12 12:26:41 +0000 (Thu, 12 Sep 2013) | 1 line
+Changed paths:
+   A /trunk/trunk
+
+Created directory 'trunk'.
+------------------------------------------------------------------------
+r316 | yossa | 2013-05-24 21:14:16 +0000 (Fri, 24 May 2013) | 4 lines
+Changed paths:
+   M /trunk/Skillet.lua
+   M /trunk/Skillet.toc
+   M /trunk/UI/MainFrame.lua
+
+Skillet:
+- show skill-up change on rank frame tooltip
+
+
+------------------------------------------------------------------------

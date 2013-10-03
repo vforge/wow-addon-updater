@@ -1,0 +1,7 @@
+## Interface: 50400
+
+## Title: Filibuster
+## Notes: Adds a slash-command for delaying execution of non-secure chat commands. Example: |cffffff7f/in 2 /say Hello, world!|r. Alias: |cffffff7f/delay|r, |cffffff7f/wait|r.
+## Version: 1
+
+addon.lua
