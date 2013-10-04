@@ -16,4 +16,6 @@ print("SCANNING: %s" % directory)
 print("-----------------")
 for addon in WowAddonScanner.scan(directory):
     addon.print()
+    if addon.can_find_source_url():
+        print('Url:', addon.find_source_url())
     print("-----------------")

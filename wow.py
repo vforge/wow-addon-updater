@@ -1,6 +1,7 @@
 import re
 import glob
 from progressBar import progressBar
+import requests
 
 class WowUtils:
     def run_regex_and_return_string(pattern, binary_data):
@@ -69,6 +70,35 @@ class WowAddon:
 
         if self.is_tukui():
             print("[tukui] Project ID: %s" % self.tukui_projectid)
+
+    def can_find_source_url(self):
+        return self.is_curse()
+
+    def get_curseforge(self):
+        return requests.get(WowUtils.get_base_url_for_curseforge(self.curse_projectid))
+
+    def get_wowace(self):
+        return requests.get(WowUtils.get_base_url_for_wowace(self.curse_projectid))
+
+    def try_curseforge(self):
+        r = self.get_curseforge()
+        if r.status_code == 200:
+            return r.url
+        else:
+            return None
+
+    def try_wowace(self):
+        r = self.get_wowace()
+        if r.status_code == 200:
+            return r.url
+        else:
+            return None
+
+    def find_source_url(self):
+        if self.is_curse():
+            return self.try_curseforge() or self.try_wowace() or ''
+
+        raise Exception("Can't get source url - don't know how")
 
 class WowAddonScanner:
     def scan(dir):
