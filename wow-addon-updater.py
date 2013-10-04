@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import sys
-from wow import WowAddonScanner
+from libs.WowAddonScanner import WowAddonScanner
 
 print("=================")
 print("WoW Addon Updater")

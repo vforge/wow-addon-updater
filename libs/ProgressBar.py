@@ -1,8 +1,8 @@
 # https://gist.github.com/xavier-l/3306295
-#from progressBar import progressBar
+#from ProgressBar import ProgressBar
 #
 ## Initiates the progessBar
-#prog = progressBar(maxValue = 50)
+#prog = ProgressBar(maxValue = 50)
 #
 ## Uses appendAmount to set current value (20).
 #prog.updateAmount(20)
@@ -21,7 +21,7 @@
 
 import sys
 
-class progressBar:
+class ProgressBar:
     """ Builds and display a text-based progress bar. """
 
     def __init__(self, minValue = 0, maxValue = 100, totalWidth=75):
