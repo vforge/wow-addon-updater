@@ -1,4 +1,5 @@
 import re
+import requests
 
 class WowUtils:
     @staticmethod
@@ -15,14 +16,6 @@ class WowUtils:
             return None
 
     @staticmethod
-    def get_base_url_for_wowace(addon_name):
-        return "http://www.wowace.com/addons/%s/" % addon_name
-
-    @staticmethod
-    def get_base_url_for_curseforge(addon_name):
-        return "http://wow.curseforge.com/addons/%s/" % addon_name
-
-    @staticmethod
     def remove_colors(string):
         if string is None:
             return None
@@ -32,3 +25,12 @@ class WowUtils:
     @staticmethod
     def find_in_toc(what, toc):
         return WowUtils.run_regex_and_return_string(bytes(what + ": (.*)\n", 'utf-8'), toc)
+
+    @staticmethod
+    def are_we_online():
+        try:
+            requests.get('http://google.com')
+            return True
+        finally:
+            return False
+
