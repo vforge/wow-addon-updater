@@ -4,8 +4,6 @@ from .WowUtils import WowUtils
 
 class WowAddon:
     def __init__(self, toc_file):
-        self.current_interface = 50400
-
         self.toc_file = toc_file
         self.toc_data = open(toc_file, 'rb').read()
         self.title = WowUtils.remove_colors(self.find_in_toc("Title"))
@@ -23,16 +21,16 @@ class WowAddon:
         self.name = WowUtils.remove_colors(self.curse_project_name or self.title or None)
 
     def is_curse(self):
-        return self.curse_project_name != None
+        return self.curse_project_name is not None
 
     def is_tukui(self):
-        return self.tukui_projectid != None
+        return self.tukui_projectid is not None
 
     def is_outdated(self):
-        return int(self.interface) < self.current_interface
+        return int(self.interface) < WowUtils.current_interface_version()
 
     def find_in_toc(self, what):
-        return WowUtils.run_regex_and_return_string(bytes(what + ": (.*)\n", 'utf-8'), self.toc_data)
+        return WowUtils.find_in_toc(what, self.toc_data)
 
     def print(self):
         author = ("by %s" % self.author) if self.author else ''
