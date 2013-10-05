@@ -29,8 +29,11 @@ class WowUtils:
     @staticmethod
     def are_we_online():
         try:
-            requests.get('http://google.com')
-            return True
+            r = requests.get('http://google.com')
+            if r.status_code == 200:
+                return True
+            else:
+                return False
         finally:
             return False
 

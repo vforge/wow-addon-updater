@@ -10,10 +10,6 @@ def title():
     print("WoW Addon Updater")
     print("-----------------")
 
-def offline_warning():
-    if not WowUtils.are_we_online():
-        print("Warning! OFFLINE MODE")
-
 def scan():
     directory = 'AddOnsSample'
 
@@ -27,7 +23,6 @@ def scan():
 
 # main functions
 title()
-offline_warning()
 addons = scan()
 counter, size = 0, len(addons.addons)
 
