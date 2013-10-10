@@ -1,6 +1,8 @@
 # coding: utf-8
 
 import sys
+import os
+import requests
 from libs.WowAddons import WowAddons
 from libs.WowUtils import WowUtils
 from libs.WowAddonsRepository import WowAddonsRepository
@@ -38,9 +40,32 @@ def step2_get_archives(addons):
 		finally:
 			sep()
 	return links
+	
+def download_file(url, directory):
+    local_filename = url.split('/')[-1]
+    # NOTE the stream=True parameter
+    r = requests.get(url, stream=True)
+    with open(directory + '/' + local_filename, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024): 
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+                f.flush()
+    return local_filename
+	
+def step3_download_zips(links):
+	print("STEP 3: Downloading archives")
+	sep()
+	# create dir
+	directory = 'downloaded'
+	if not os.path.exists(directory):
+		os.makedirs(directory)
+	# download zips
+	for url in links:
+		print(url)
+		download_file(url, directory)
 
 # main functions
 step0_title()
 addons = step1_scan()
 links = step2_get_archives(addons)
-
+step3_download_zips(links)
