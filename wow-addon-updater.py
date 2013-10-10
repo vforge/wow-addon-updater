@@ -1,6 +1,17 @@
-# coding: utf-8
+#!/usr/bin/env python
+"""
+SYNOPSIS
+	wow-addons-updater [-h,--help] [-v,--verbose] [--version]
 
-import sys
+DESCRIPTION
+	World of Warcraft AddOns updater - it tries to be smart :)
+
+AUTHOR
+	Bartosz V. Bentkowski
+
+"""
+
+import sys, os, traceback, argparse, time
 from libs.WowAddons import WowAddons
 from libs.Utils import Utils
 from libs.WowAddonsRepository import WowAddonsRepository
@@ -12,10 +23,7 @@ def step0_title():
 	Utils.sep()
 
 
-def step1_scan():
-	directory = 'AddOnsSample'
-	if len(sys.argv) > 1:
-		directory = sys.argv[1]
+def step1_scan(directory):
 	print("STEP 1: Scanning %s" % directory)
 	Utils.sep()
 	addons = WowAddons(directory)
@@ -34,10 +42,10 @@ def step2_get_archives(addons):
 			repository = WowAddonsRepository.factory(addon)
 			links.append(repository.get_downloading_link(addon))
 		except ValueError:
-			print("Cannot find source for that :(")
-		finally:
-			Utils.sep()
+			pass
+	Utils.sep()
 	return links
+
 
 def step3_download_zips(links):
 	print("STEP 3: Downloading archives")
@@ -49,8 +57,10 @@ def step3_download_zips(links):
 	local_files = []
 	for url in links:
 		print(url)
-		local_files.append(download_file(url, directory))
+		local_files.append(Utils.download_file(url, directory))
+	Utils.sep()
 	return local_files
+
 
 def step4_unzip(zip_files):
 	print("STEP 4: Unzipping")
@@ -62,11 +72,43 @@ def step4_unzip(zip_files):
 	for zipfile in zip_files:
 		print("Extracting", zipfile)
 		Utils.extract_zip('downloaded/' + zipfile, directory)
+	Utils.sep()
 
 
-# main functions
-step0_title()
-addons = step1_scan()
-links = step2_get_archives(addons)
-local_files = step3_download_zips(links)
-step4_unzip(local_files)
+def main():
+	global args
+
+	step0_title()
+	addons = step1_scan(args.directory)
+	links = step2_get_archives(addons)
+	local_files = step3_download_zips(links)
+	step4_unzip(local_files)
+
+
+# RUN BLOCK
+if __name__ == '__main__':
+	try:
+		start_time = time.time()
+		parser = argparse.ArgumentParser(description = 'WoW AddOns Updater')
+
+		parser.add_argument('-v', '--verbose', action = 'store_true', default = False, help = 'verbose output')
+		parser.add_argument('--dir', dest='directory', type=str, default='AddOnsSample', help='Directory to scan')
+
+		args = parser.parse_args()
+		#if len(args) < 1:
+		#    parser.error ('missing argument')
+		if args.verbose:
+			print('START:', time.asctime())
+		main()
+		if args.verbose:
+			print('END:', time.asctime())
+			print("TOTAL TIME IN MINUTES: %.2f" % ((time.time() - start_time) / 60.0))
+		sys.exit(0)
+	except KeyboardInterrupt as e: # Ctrl-C
+		raise e
+	except SystemExit as e: # sys.exit()
+		raise e
+	except Exception as e:
+		print('ERROR, UNEXPECTED EXCEPTION', str(e))
+		traceback.print_exc()
+		os._exit(1)
