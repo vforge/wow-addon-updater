@@ -1,4 +1,4 @@
-import re, requests, os, zipfile
+import re, requests, os, zipfile, shutil
 
 class Utils:
 	@staticmethod
@@ -30,6 +30,10 @@ class Utils:
 	def create_directory(directory):
 		if not os.path.exists(directory):
 			os.makedirs(directory)
+
+	@staticmethod
+	def remove_directory(directory):
+		shutil.rmtree(directory)
 
 	@staticmethod
 	def extract_zip(zipfilepath, extractiondir):

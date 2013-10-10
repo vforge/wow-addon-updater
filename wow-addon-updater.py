@@ -63,15 +63,24 @@ def step3_download_zips(links):
 
 
 def step4_unzip(zip_files):
+	global args
+
 	print("STEP 4: Unzipping")
 	Utils.sep()
 	# create dir
-	directory = 'downloaded/AddOns'
-	Utils.create_directory(directory)
+	if args.debug:
+		directory = 'downloaded/AddOns'
+		Utils.create_directory(directory)
+	else:
+		directory = args.directory
 	# unzip
 	for zipfile in zip_files:
 		print("Extracting", zipfile)
 		Utils.extract_zip('downloaded/' + zipfile, directory)
+	if not args.debug:
+		Utils.sep()
+		print('Removing "downloaded" directory')
+		Utils.remove_directory('downloaded')
 	Utils.sep()
 
 
@@ -92,6 +101,7 @@ if __name__ == '__main__':
 		parser = argparse.ArgumentParser(description = 'WoW AddOns Updater')
 
 		parser.add_argument('-v', '--verbose', action = 'store_true', default = False, help = 'verbose output')
+		parser.add_argument('-d', '--debug',   action = 'store_true', default = False, help = 'debug mode - DON\'T OVERRIDE ADDONS DIRECTORY CONTENTS')
 		parser.add_argument('--dir', dest='directory', type=str, default='AddOnsSample', help='Directory to scan')
 
 		args = parser.parse_args()
