@@ -1,13 +1,10 @@
-import requests
+from Wow.Utils import Utils
 
-from .WowUtils import WowUtils
-
-
-class WowAddon:
+class Addon:
 	def __init__(self, toc_file):
 		self.toc_file = toc_file
 		self.toc_data = open(toc_file, 'rb').read()
-		self.title = WowUtils.remove_colors(self.__find_in_toc("Title"))
+		self.title = Utils.remove_colors(self.__find_in_toc("Title"))
 		self.version = self.__find_in_toc("Version")
 		self.author = self.__find_in_toc("Author")
 		self.interface = self.__find_in_toc("Interface")
@@ -29,11 +26,11 @@ class WowAddon:
 		return self.tukui_projectid is not None
 
 	def is_outdated(self):
-		return int(self.interface) < WowUtils.current_interface_version()
+		return int(self.interface) < Utils.current_interface_version()
 
 	# private
 	def __find_in_toc(self, what):
-		return WowUtils.find_in_toc(what, self.toc_data)
+		return Utils.find_in_toc(what, self.toc_data)
 
 	# to str :P
 	def print(self):

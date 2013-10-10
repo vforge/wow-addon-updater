@@ -11,54 +11,55 @@ AUTHOR
 
 """
 
-import sys, os, traceback, argparse, time
-from libs.WowAddons import WowAddons
-from libs.Utils import Utils
-from libs.WowAddonsRepository import WowAddonsRepository
-
+import re, sys, os, traceback, argparse, time, Tools
+from Wow.Addons import Addons
+from Wow.AddonsRepository import AddonsRepository
 
 def step0_title():
-	Utils.sep("=")
+	Tools.sep("=")
 	print("WoW Addon Updater")
-	Utils.sep()
+	Tools.sep()
 
 
 def step1_scan(directory):
 	print("STEP 1: Scanning %s" % directory)
-	Utils.sep()
-	addons = WowAddons(directory)
-	Utils.sep()
+	Tools.sep()
+	addons = Addons(directory)
+	Tools.sep()
 	return addons
 
 
 def step2_get_archives(addons):
 	counter, size, links = 0, len(addons.addons), []
 	print("STEP 2: Finding archives")
-	Utils.sep()
+	Tools.sep()
 	for addon in addons.addons:
 		counter += 1
 		print("%d/%d: %s" % (counter, size, addon.name))
 		try:
-			repository = WowAddonsRepository.factory(addon)
+			repository = AddonsRepository.factory(addon)
 			links.append(repository.get_downloading_link(addon))
 		except ValueError:
 			pass
-	Utils.sep()
+	Tools.sep()
 	return links
 
 
 def step3_download_zips(links):
-	print("STEP 3: Downloading archives")
-	Utils.sep()
+	print("STEP 3: Downloading %d archives" % len(links))
+	Tools.sep()
 	# create dir
 	directory = 'downloaded'
-	Utils.create_directory(directory)
+	Tools.create_directory(directory)
 	# download zips
 	local_files = []
 	for url in links:
-		print(url)
-		local_files.append(Utils.download_file(url, directory))
-	Utils.sep()
+		if url is None:
+			print("Skipping empty url")
+		else:
+			print(url)
+			local_files.append(Tools.download_file(url, directory))
+	Tools.sep()
 	return local_files
 
 
@@ -66,22 +67,22 @@ def step4_unzip(zip_files):
 	global args
 
 	print("STEP 4: Unzipping")
-	Utils.sep()
+	Tools.sep()
 	# create dir
 	if args.debug:
 		directory = 'downloaded/AddOns'
-		Utils.create_directory(directory)
+		Tools.create_directory(directory)
 	else:
 		directory = args.directory
 	# unzip
 	for zipfile in zip_files:
 		print("Extracting", zipfile)
-		Utils.extract_zip('downloaded/' + zipfile, directory)
+		Tools.extract_zip('downloaded/' + zipfile, directory)
 	if not args.debug:
-		Utils.sep()
+		Tools.sep()
 		print('Removing "downloaded" directory')
-		Utils.remove_directory('downloaded')
-	Utils.sep()
+		Tools.remove_directory('downloaded')
+	Tools.sep()
 
 
 def main():
@@ -105,8 +106,6 @@ if __name__ == '__main__':
 		parser.add_argument('--dir', dest='directory', type=str, default='AddOnsSample', help='Directory to scan')
 
 		args = parser.parse_args()
-		#if len(args) < 1:
-		#    parser.error ('missing argument')
 		if args.verbose:
 			print('START:', time.asctime())
 		main()

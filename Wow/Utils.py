@@ -1,9 +1,6 @@
-import re
-import requests
-from .Utils import Utils
+import re, requests, Tools
 
-
-class WowUtils:
+class Utils:
 	@staticmethod
 	def current_interface_version():
 		return 50400
@@ -17,7 +14,7 @@ class WowUtils:
 
 	@staticmethod
 	def find_in_toc(what, toc):
-		return Utils.run_regex_and_return_string(bytes(what + ": (.*)\n", 'utf-8'), toc)
+		return Tools.run_regex_and_return_string(bytes(what + ": (.*)\n", 'utf-8'), toc)
 
 	@staticmethod
 	def are_we_online():

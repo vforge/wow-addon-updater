@@ -1,26 +1,21 @@
-import re
+import re, requests
+from Wow.Utils import Utils
 
-import requests
-
-from .WowUtils import WowUtils
-
-
-class WowAddonsRepository:
+class AddonsRepository:
 	"""Abstract WoW Addons repository"""
 
 	@staticmethod
 	def factory(addon):
-		for cls in WowAddonsRepository.__subclasses__():
+		for cls in AddonsRepository.__subclasses__():
 			if cls.is_valid_for(addon):
 				return cls
 			raise ValueError
 
 	@classmethod
 	def is_valid_page(cls, addon):
-		return WowUtils.are_we_online() and WowUtils.is_responding(cls.get_url_for(addon))
+		return Utils.is_responding(cls.get_url_for(addon))
 
-
-class WowRepositoryWowAce(WowAddonsRepository):
+class RepositoryWowAce(AddonsRepository):
 	def __init__(self):
 		self.name = 'WowAce'
 
@@ -43,12 +38,15 @@ class WowRepositoryWowAce(WowAddonsRepository):
 		return cls.__download_chain(cls, url)
 
 	def __download_chain(self, url):
+		global args
+		
 		page = requests.get(url).content
 		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I | re.DOTALL)
 		match = regex.search(page)
 		if match:
 			full_url = self.get_full_url(self, str(match.group(1), encoding = 'UTF-8').strip())
 			print("Found match at: %s" % full_url)
+
 			if full_url[-4:] == '.zip':
 				return full_url
 			else:
@@ -57,7 +55,9 @@ class WowRepositoryWowAce(WowAddonsRepository):
 			return None
 
 
-class WowRepositoryCurseforge(WowAddonsRepository):
+
+
+class RepositoryCurseforge(AddonsRepository):
 	def __init__(self):
 		self.name = 'Curseforge'
 
@@ -80,12 +80,15 @@ class WowRepositoryCurseforge(WowAddonsRepository):
 		return cls.__download_chain(cls, url)
 
 	def __download_chain(self, url):
+		global args
+		
 		page = requests.get(url).content
 		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I | re.DOTALL)
 		match = regex.search(page)
 		if match:
 			full_url = self.get_full_url(self, str(match.group(1), encoding = 'UTF-8').strip())
 			print("Found match at: %s" % full_url)
+				
 			if full_url[-4:] == '.zip':
 				return full_url
 			else:
@@ -94,7 +97,9 @@ class WowRepositoryCurseforge(WowAddonsRepository):
 			return None
 
 
-class WowRepositoryTukui(WowAddonsRepository):
+
+
+class RepositoryTukui(AddonsRepository):
 	def __init__(self):
 		self.name = 'TukUI'
 

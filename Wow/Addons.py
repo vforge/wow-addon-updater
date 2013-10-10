@@ -1,9 +1,8 @@
 import glob
-from .ProgressBar import ProgressBar
-from .WowAddon import WowAddon
+from Wow.Addon import Addon
+from Wow.ProgressBar import ProgressBar
 
-
-class WowAddons:
+class Addons:
 	def __init__(self, directory):
 		self.directory = directory
 		self.addon_tocs = []
@@ -21,7 +20,7 @@ class WowAddons:
 		self.addons = []
 		addon_names = []
 		for toc in self.addon_tocs:
-			addon = WowAddon(toc)
+			addon = Addon(toc)
 
 			if addon.name and (addon.name not in addon_names):
 				self.addons.append(addon)
