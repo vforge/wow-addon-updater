@@ -1,126 +1,52 @@
-import re
-import glob
-from progressBar import progressBar
-import requests
+import re, requests, os, zipfile
 
-class WowUtils:
-    def run_regex_and_return_string(pattern, binary_data):
-        regex = re.compile(pattern, re.I)
-        match = regex.search(binary_data)
-        if match:
-            return str(match.group(1), encoding='UTF-8').strip()
-        else:
-            return None
+class Utils:
+	@staticmethod
+	def run_regex_and_return_string(pattern, binary_data):
+		regex = re.compile(pattern, re.I)
+		match = regex.search(binary_data)
+		if match:
+			return str(match.group(1), encoding = 'UTF-8').strip()
+		else:
+			return None
 
-    def get_base_url_for_wowace(addon_name):
-        return "http://www.wowace.com/addons/%s/" % addon_name
+	@staticmethod
+	def sep(style = '-'):
+		print(style * 30)
 
-    def get_base_url_for_curseforge(addon_name):
-        return "http://wow.curseforge.com/addons/%s/" % addon_name
+	@staticmethod
+	def download_file(url, directory):
+		local_filename = url.split('/')[-1]
+		# NOTE the stream=True parameter
+		r = requests.get(url, stream = True)
+		with open(directory + '/' + local_filename, 'wb') as f:
+			for chunk in r.iter_content(chunk_size = 1024):
+				if chunk: # filter out keep-alive new chunks
+					f.write(chunk)
+					f.flush()
+		return local_filename
 
-class WowAddon:
-    def __init__(self, toc_file):
-        self.current_interface = 50400
+	@staticmethod
+	def create_directory(directory):
+		if not os.path.exists(directory):
+			os.makedirs(directory)
 
-        self.toc_file = toc_file
-        self.toc_data = open(toc_file, 'rb').read()
-        self.title = self.remove_colors(self.find_in_toc("Title"))
-        self.version = self.find_in_toc("Version")
-        self.author = self.find_in_toc("Author")
-        self.interface = self.find_in_toc("Interface")
+	@staticmethod
+	def extract_zip(zipfilepath, extractiondir):
+		zip = zipfile.ZipFile(zipfilepath)
+		zip.extractall(path = extractiondir)
 
-        self.curse_project_name = self.find_in_toc("X-Curse-Project-Name")
-        self.curse_package_version = self.find_in_toc("X-Curse-Packaged-Version")
-        self.curse_repository_id = self.find_in_toc("X-Curse-Repository-ID")
-        self.curse_projectid = self.find_in_toc("X-Curse-Project-ID")
-
-        self.tukui_projectid = self.find_in_toc("X-Tukui-ProjectID")
-
-        self.name = self.remove_colors(self.curse_project_name or self.title or None)
-
-    def is_curse(self):
-        return self.curse_project_name != None
-
-    def is_tukui(self):
-        return self.tukui_projectid != None
-
-    def is_outdated(self):
-        return int(self.interface) < self.current_interface
-
-    def remove_colors(self, string):
-        if string == None:
-            return None
-        string = re.sub(r"\|\c........", "", string)
-        return string.replace("|r", "")
-
-    def find_in_toc(self, what):
-        return WowUtils.run_regex_and_return_string(bytes(what + ": (.*)\n", 'utf-8'), self.toc_data)
-
-    def print(self):
-        author = ("by %s" % self.author) if self.author else ''
-        print(self.title, author)
-        if self.version:
-            print("Version: %s" % self.version)
-
-        print("Interface:", self.interface, '!!OUTDATED!!' if self.is_outdated() else '')
-
-        if self.is_curse():
-            print("[curse] Project ID: %s" % self.curse_projectid)
-            print("[curse] Package Version: %s" % self.curse_package_version)
-
-        if self.is_tukui():
-            print("[tukui] Project ID: %s" % self.tukui_projectid)
-
-    def can_find_source_url(self):
-        return self.is_curse()
-
-    def get_curseforge(self):
-        return requests.get(WowUtils.get_base_url_for_curseforge(self.curse_projectid))
-
-    def get_wowace(self):
-        return requests.get(WowUtils.get_base_url_for_wowace(self.curse_projectid))
-
-    def try_curseforge(self):
-        r = self.get_curseforge()
-        if r.status_code == 200:
-            return r.url
-        else:
-            return None
-
-    def try_wowace(self):
-        r = self.get_wowace()
-        if r.status_code == 200:
-            return r.url
-        else:
-            return None
-
-    def find_source_url(self):
-        if self.is_curse():
-            return self.try_curseforge() or self.try_wowace() or ''
-
-        raise Exception("Can't get source url - don't know how")
-
-class WowAddonScanner:
-    def scan(dir):
-        # scan dir in search of files
-        tocs = glob.glob(dir + '/*/*.toc')
-        len_tocs = len(tocs)
-
-        print("Scanning %d ToC files" % len_tocs)
-        prog = progressBar(maxValue = len_tocs)
-
-        addons = []
-        addon_names = []
-        for toc in tocs:
-            addon = WowAddon(toc)
-
-            if addon.name and (addon.name not in addon_names):
-                addons.append(addon)
-                addon_names.append(addon.name)
-
-            prog.appendAmount(1)
-            prog.draw()
-
-        print("\nFound %d addons" % len(addons))
-
-        return addons
+	@staticmethod
+	def unzip(source_filename, dest_dir):
+		with zipfile.ZipFile(source_filename) as zf:
+			for member in zf.infolist():
+				# Path traversal defense copied from
+				# http://hg.python.org/cpython/file/tip/Lib/http/server.py#l789
+				words = member.filename.split('/')
+				path = dest_dir
+				for word in words[:-1]:
+					drive, word = os.path.splitdrive(word)
+					head, word = os.path.split(word)
+					if word in (os.curdir, os.pardir, ''): continue
+					path = os.path.join(path, word)
+				zf.extract(member, path)

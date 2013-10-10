@@ -1,6 +1,9 @@
-import requests
 import re
+
+import requests
+
 from .WowUtils import WowUtils
+
 
 class WowAddonsRepository:
 	"""Abstract WoW Addons repository"""
@@ -41,10 +44,10 @@ class WowRepositoryWowAce(WowAddonsRepository):
 
 	def __download_chain(self, url):
 		page = requests.get(url).content
-		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I|re.DOTALL)
+		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I | re.DOTALL)
 		match = regex.search(page)
 		if match:
-			full_url = self.get_full_url(self, str(match.group(1), encoding='UTF-8').strip())
+			full_url = self.get_full_url(self, str(match.group(1), encoding = 'UTF-8').strip())
 			print("Found match at: %s" % full_url)
 			if full_url[-4:] == '.zip':
 				return full_url
@@ -78,10 +81,10 @@ class WowRepositoryCurseforge(WowAddonsRepository):
 
 	def __download_chain(self, url):
 		page = requests.get(url).content
-		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I|re.DOTALL)
+		regex = re.compile(bytes('user-action-download">.*href="(.*)">Download', 'utf-8'), re.I | re.DOTALL)
 		match = regex.search(page)
 		if match:
-			full_url = self.get_full_url(self, str(match.group(1), encoding='UTF-8').strip())
+			full_url = self.get_full_url(self, str(match.group(1), encoding = 'UTF-8').strip())
 			print("Found match at: %s" % full_url)
 			if full_url[-4:] == '.zip':
 				return full_url
