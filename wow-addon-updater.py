@@ -1,8 +1,6 @@
 # coding: utf-8
 
-import sys
-import os
-import requests
+import sys, zipfile, os, requests
 from libs.WowAddons import WowAddons
 from libs.WowUtils import WowUtils
 from libs.WowAddonsRepository import WowAddonsRepository
@@ -52,20 +50,57 @@ def download_file(url, directory):
                 f.flush()
     return local_filename
 	
+def create_directory(directory):
+	if not os.path.exists(directory):
+		os.makedirs(directory)
+	
 def step3_download_zips(links):
 	print("STEP 3: Downloading archives")
 	sep()
 	# create dir
 	directory = 'downloaded'
-	if not os.path.exists(directory):
-		os.makedirs(directory)
+	create_directory(directory)
 	# download zips
+	local_files = []
 	for url in links:
 		print(url)
-		download_file(url, directory)
+		local_files.append(download_file(url, directory))
+	return local_files
+
+def extract(zipfilepath, extractiondir):
+    zip = zipfile.ZipFile(zipfilepath)
+    zip.extractall(path=extractiondir)
+	
+def unzip(source_filename, dest_dir):
+    with zipfile.ZipFile(source_filename) as zf:
+        for member in zf.infolist():
+            # Path traversal defense copied from
+            # http://hg.python.org/cpython/file/tip/Lib/http/server.py#l789
+            words = member.filename.split('/')
+            path = dest_dir
+            for word in words[:-1]:
+                drive, word = os.path.splitdrive(word)
+                head, word = os.path.split(word)
+                if word in (os.curdir, os.pardir, ''): continue
+                path = os.path.join(path, word)
+            zf.extract(member, path)
+			
+def step4_unzip(zip_files):
+	print("STEP 4: Unzipping")
+	sep()
+	# create dir
+	directory = 'downloaded/AddOns'
+	create_directory(directory)
+	# unzip
+	for zipfile in zip_files:
+		print("Extracting", zipfile)
+		extract('downloaded/' + zipfile, directory)
+	
+
 
 # main functions
 step0_title()
 addons = step1_scan()
 links = step2_get_archives(addons)
-step3_download_zips(links)
+local_files = step3_download_zips(links)
+step4_unzip(local_files)
